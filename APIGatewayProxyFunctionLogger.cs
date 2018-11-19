@@ -51,7 +51,7 @@ namespace MhLabs.APIGatewayLambdaProxy.Logging
 
             if (logApiGatewayProxyResponse)
             {
-                context.Information("APIGatewayProxyResponse: {@APIGatewayProxyResponse}", response.Headers, response); 
+                context.Information("APIGatewayProxyResponse: {@APIGatewayProxyResponse}", response); 
             }
             
             return response;
