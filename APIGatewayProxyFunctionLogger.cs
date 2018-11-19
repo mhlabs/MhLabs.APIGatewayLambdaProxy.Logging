@@ -40,7 +40,14 @@ namespace MhLabs.APIGatewayLambdaProxy.Logging
             var response = await func(request, lambdaContext);
             var elapsed = GetElapsedMilliseconds(start, Stopwatch.GetTimestamp());
 
-            context.Information("Response - {Method} - {Path} responded {StatusCode} in {Elapsed:0.0000} ms", request.HttpMethod, request.Path, response.StatusCode, elapsed);
+            if (response.StatusCode >= 400)
+            {
+                context.Error("Response - {Method} - {Path} responded {StatusCode} in {Elapsed:0.0000} ms", request.HttpMethod, request.Path, response.StatusCode, elapsed);
+            }
+            else
+            {
+                context.Information("Response - {Method} - {Path} responded {StatusCode} in {Elapsed:0.0000} ms", request.HttpMethod, request.Path, response.StatusCode, elapsed);
+            }
 
             if (logApiGatewayProxyResponse)
             {
