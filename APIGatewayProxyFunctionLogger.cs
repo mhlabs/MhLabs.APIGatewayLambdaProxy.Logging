@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
+using Newtonsoft.Json;
 using Serilog;
 
 namespace MhLabs.APIGatewayLambdaProxy.Logging
@@ -22,18 +23,9 @@ namespace MhLabs.APIGatewayLambdaProxy.Logging
         {
             var context = logger.ForContext(typeof(APIGatewayProxyFunctionLogger));
             context.Information("Request - {Method} - {Path}", request.HttpMethod, request.Path);
-
-            if (lambdaContext.ClientContext != null)
-            {
-                context.Information("ClientContext: {@ClientContext}", lambdaContext.ClientContext);
-            }
-
-            context.Information(
-                "ILambdaContext: {AwsRequestId} {IdentityPoolId} {IdentityId} {FunctionName} {FunctionVersion} {MemoryLimitInMB} {RemainingTime}",
-                lambdaContext.AwsRequestId, lambdaContext.Identity?.IdentityPoolId, lambdaContext.Identity?.IdentityId,
-                lambdaContext.FunctionName, lambdaContext.FunctionVersion, lambdaContext.MemoryLimitInMB, lambdaContext.RemainingTime);
-
-            context.Information("APIGatewayProxyRequest: {@APIGatewayProxyRequest}", request);
+            context.Information("ProxyRequest: {@Request}", request);
+            context.Information("Context: {@ILambdaContext}", lambdaContext);
+            context.Information("Claims: {@Claims}", request.RequestContext?.Authorizer?.Claims);
 
             // Invoke func
             var start = Stopwatch.GetTimestamp();
@@ -51,7 +43,7 @@ namespace MhLabs.APIGatewayLambdaProxy.Logging
 
             if (logApiGatewayProxyResponse)
             {
-                context.Information("APIGatewayProxyResponse: {@APIGatewayProxyResponse}", response); 
+                context.Information("ProxyResponse: {@Response}", response); 
             }
             
             return response;
