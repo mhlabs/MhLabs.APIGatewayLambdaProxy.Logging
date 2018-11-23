@@ -23,7 +23,7 @@ namespace MhLabs.APIGatewayLambdaProxy.Logging
         {
             var context = logger.ForContext(typeof(APIGatewayProxyFunctionLogger));
             context.Information("Request - {Method} - {Path}", request.HttpMethod, request.Path);
-            context.Information("ProxyRequest: {@Request}", request);
+            context.Information("ProxyRequest: {@APIGatewayProxyRequest}", request);
             context.Information("Context: {@ILambdaContext}", lambdaContext);
             context.Information("Claims: {@Claims}", request.RequestContext?.Authorizer?.Claims);
 
@@ -43,7 +43,7 @@ namespace MhLabs.APIGatewayLambdaProxy.Logging
 
             if (logApiGatewayProxyResponse)
             {
-                context.Information("ProxyResponse: {@Response}", response); 
+                context.Information("ProxyResponse: {@APIGatewayProxyResponse}", response); 
             }
             
             return response;
