@@ -3,12 +3,11 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
-using Newtonsoft.Json;
-using Serilog;
+using Microsoft.Extensions.Logging;
 
 namespace MhLabs.APIGatewayLambdaProxy.Logging
 {
-    public static class APIGatewayProxyFunctionLogger
+    public class APIGatewayProxyFunctionLogger
     {
         /// <summary>
         /// Used to wrap the FunctionHandlerAsync-call with added logging for request and response via Serilog
@@ -19,13 +18,12 @@ namespace MhLabs.APIGatewayLambdaProxy.Logging
         /// <param name="logger"></param>
         /// <param name="logApiGatewayProxyResponse">IMPORTANT: Response body can be huge in size and logging it can have impact on performance and stability. Know what you are doing before you enable this.</param>
         /// <returns></returns>
-        public static async Task<APIGatewayProxyResponse> LogFunctionHandlerAsync(APIGatewayProxyRequest request, ILambdaContext lambdaContext, Func<APIGatewayProxyRequest, ILambdaContext, Task<APIGatewayProxyResponse>> func, ILogger logger, bool logApiGatewayProxyResponse = false)
+        public static async Task<APIGatewayProxyResponse> LogFunctionHandlerAsync(APIGatewayProxyRequest request, ILambdaContext lambdaContext, Func<APIGatewayProxyRequest, ILambdaContext, Task<APIGatewayProxyResponse>> func, ILogger<APIGatewayProxyFunctionLogger> logger, bool logApiGatewayProxyResponse = false)
         {
-            var context = logger.ForContext(typeof(APIGatewayProxyFunctionLogger));
-            context.Information("Request - {Method} - {Path}", request.HttpMethod, request.Path);
-            context.Information("ProxyRequest: {@APIGatewayProxyRequest}", request);
-            context.Information("Context: {@ILambdaContext}", lambdaContext);
-            context.Information("Claims: {@Claims}", request.RequestContext?.Authorizer?.Claims);
+            logger.LogInformation("Request - {Method} - {Path}", request.HttpMethod, request.Path);
+            logger.LogInformation("ProxyRequest: {@APIGatewayProxyRequest}", request);
+            logger.LogInformation("Context: {@ILambdaContext}", lambdaContext);
+            logger.LogInformation("Claims: {@Claims}", request.RequestContext?.Authorizer?.Claims);
 
             // Invoke func
             var start = Stopwatch.GetTimestamp();
@@ -34,16 +32,16 @@ namespace MhLabs.APIGatewayLambdaProxy.Logging
 
             if (response.StatusCode >= 400)
             {
-                context.Error("Response - {Method} - {Path} responded {StatusCode} in {Elapsed:0.0000} ms", request.HttpMethod, request.Path, response.StatusCode, elapsed);
+                logger.LogError("Response - {Method} - {Path} responded {StatusCode} in {Elapsed:0.0000} ms", request.HttpMethod, request.Path, response.StatusCode, elapsed);
             }
             else
             {
-                context.Information("Response - {Method} - {Path} responded {StatusCode} in {Elapsed:0.0000} ms", request.HttpMethod, request.Path, response.StatusCode, elapsed);
+                logger.LogInformation("Response - {Method} - {Path} responded {StatusCode} in {Elapsed:0.0000} ms", request.HttpMethod, request.Path, response.StatusCode, elapsed);
             }
 
             if (logApiGatewayProxyResponse)
             {
-                context.Information("ProxyResponse: {@APIGatewayProxyResponse}", response); 
+                logger.LogInformation("ProxyResponse: {@APIGatewayProxyResponse}", response); 
             }
             
             return response;
