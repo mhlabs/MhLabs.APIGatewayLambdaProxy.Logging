@@ -21,9 +21,7 @@ namespace MhLabs.APIGatewayLambdaProxy.Logging
         public static async Task<APIGatewayProxyResponse> LogFunctionHandlerAsync(APIGatewayProxyRequest request, ILambdaContext lambdaContext, Func<APIGatewayProxyRequest, ILambdaContext, Task<APIGatewayProxyResponse>> func, ILogger<APIGatewayProxyFunctionLogger> logger, bool logApiGatewayProxyResponse = false)
         {
             logger.LogInformation("Request - {Method} - {Path}", request.HttpMethod, request.Path);
-            logger.LogInformation("ProxyRequest: {@APIGatewayProxyRequest}", request);
-            logger.LogInformation("Context: {@ILambdaContext}", lambdaContext);
-            logger.LogInformation("Claims: {@Claims}", request.RequestContext?.Authorizer?.Claims);
+            logger.LogInformation("ProxyRequest: {@APIGatewayProxyRequest}. Context: {@ILambdaContext}. Claims: {@Claims}", request);
 
             // Invoke func
             var start = Stopwatch.GetTimestamp();
