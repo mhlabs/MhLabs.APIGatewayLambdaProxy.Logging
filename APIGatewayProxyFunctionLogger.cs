@@ -17,11 +17,16 @@ namespace MhLabs.APIGatewayLambdaProxy.Logging
         /// <param name="func"></param>
         /// <param name="logger"></param>
         /// <param name="logApiGatewayProxyResponse">IMPORTANT: Response body can be huge in size and logging it can have impact on performance and stability. Know what you are doing before you enable this.</param>
+        /// <param name="logApiGatewayContext"></param>
         /// <returns></returns>
-        public static async Task<APIGatewayProxyResponse> LogFunctionHandlerAsync(APIGatewayProxyRequest request, ILambdaContext lambdaContext, Func<APIGatewayProxyRequest, ILambdaContext, Task<APIGatewayProxyResponse>> func, ILogger<APIGatewayProxyFunctionLogger> logger, bool logApiGatewayProxyResponse = false)
+        public static async Task<APIGatewayProxyResponse> LogFunctionHandlerAsync(APIGatewayProxyRequest request, ILambdaContext lambdaContext, Func<APIGatewayProxyRequest, ILambdaContext, Task<APIGatewayProxyResponse>> func, ILogger<APIGatewayProxyFunctionLogger> logger, bool logApiGatewayProxyResponse = false, bool logApiGatewayContext = false)
         {
             logger.LogInformation("Request - {Method} - {Path}", request.HttpMethod, request.Path);
-            logger.LogInformation("ProxyRequest: {@APIGatewayProxyRequest}. Context: {@ILambdaContext}. Claims: {@Claims}", request, lambdaContext, request.RequestContext?.Authorizer?.Claims);
+
+            if (logApiGatewayContext)
+            {
+                logger.LogInformation("ProxyRequest: {@APIGatewayProxyRequest}. Context: {@ILambdaContext}. Claims: {@Claims}", request, lambdaContext, request.RequestContext?.Authorizer?.Claims);
+            }
 
             // Invoke func
             var start = Stopwatch.GetTimestamp();
@@ -39,9 +44,9 @@ namespace MhLabs.APIGatewayLambdaProxy.Logging
 
             if (logApiGatewayProxyResponse)
             {
-                logger.LogInformation("ProxyResponse: {@APIGatewayProxyResponse}", response); 
+                logger.LogInformation("ProxyResponse: {@APIGatewayProxyResponse}", response);
             }
-            
+
             return response;
         }
 
