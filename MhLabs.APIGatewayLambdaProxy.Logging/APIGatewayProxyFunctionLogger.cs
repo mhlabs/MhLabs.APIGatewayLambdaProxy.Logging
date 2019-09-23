@@ -35,11 +35,11 @@ namespace MhLabs.APIGatewayLambdaProxy.Logging
 
             if (response.StatusCode >= 400)
             {
-                logger.LogError("Response - {Method} - {Path} responded {StatusCode} in {Elapsed:0.0000} ms", request.HttpMethod, request.Path, response.StatusCode, elapsed);
+                logger.LogError("Response - {Method} - {Path} responded {StatusCode} in {Elapsed:0.0000} ms", request.HttpMethod, request.Path, response.StatusCode, (int) elapsed);
             }
             else
             {
-                logger.LogInformation("Response - {Method} - {Path} responded {StatusCode} in {Elapsed:0.0000} ms", request.HttpMethod, request.Path, response.StatusCode, elapsed);
+                logger.LogInformation("Response - {Method} - {Path} responded {StatusCode} in {Elapsed:0.0000} ms", request.HttpMethod, request.Path, response.StatusCode, (int) elapsed);
             }
 
             if (logApiGatewayProxyResponse)
