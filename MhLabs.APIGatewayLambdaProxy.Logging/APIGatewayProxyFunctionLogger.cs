@@ -19,7 +19,7 @@ namespace MhLabs.APIGatewayLambdaProxy.Logging
         /// <param name="logApiGatewayProxyResponse">IMPORTANT: Response body can be huge in size and logging it can have impact on performance and stability. Know what you are doing before you enable this.</param>
         /// <param name="logApiGatewayContext"></param>
         /// <returns></returns>
-        public static async Task<APIGatewayProxyResponse> LogFunctionHandlerAsync(APIGatewayProxyRequest request, ILambdaContext lambdaContext, Func<APIGatewayProxyRequest, ILambdaContext, Task<APIGatewayProxyResponse>> func, ILogger<APIGatewayProxyFunctionLogger> logger, bool logApiGatewayProxyResponse = false, bool logApiGatewayContext = false)
+        public static async Task<APIGatewayProxyResponse> LogFunctionHandlerAsync(APIGatewayProxyRequest request, ILambdaContext lambdaContext, Func<APIGatewayProxyRequest, ILambdaContext, Task<APIGatewayProxyResponse>> func, ILogger<APIGatewayProxyFunctionLogger> logger, bool logApiGatewayProxyResponse = false, bool logApiGatewayContext = false, Action<APIGatewayProxyRequest, APIGatewayProxyResponse, double> postAction = null)
         {
             logger.LogInformation("Request - {Method} - {Path}", request.HttpMethod, request.Path);
 
@@ -46,6 +46,8 @@ namespace MhLabs.APIGatewayLambdaProxy.Logging
             {
                 logger.LogInformation("ProxyResponse: {@APIGatewayProxyResponse}", response);
             }
+
+            postAction?.Invoke(request, response, elapsed);
 
             return response;
         }
