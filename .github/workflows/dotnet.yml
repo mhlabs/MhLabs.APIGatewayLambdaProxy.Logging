@@ -15,9 +15,11 @@ jobs:
         with:
           dotnet-version: 6.0.x
 
-      # Publish nuget package
-      - name: Pack
+      - name: Build project
+        run: dotnet build MhLabs.APIGatewayLambdaProxy.Logging/MhLabs.APIGatewayLambdaProxy.Logging.csproj -c Release
+
+      - name: Build project package
         run: dotnet pack MhLabs.APIGatewayLambdaProxy.Logging/MhLabs.APIGatewayLambdaProxy.Logging.csproj -c Release
                 
-      - name: Publish to GitHub packages 
+      - name: Publish to nuget packages 
         run: dotnet nuget push /home/runner/work/MhLabs.APIGatewayLambdaProxy.Logging/MhLabs.APIGatewayLambdaProxy.Logging/MhLabs.APIGatewayLambdaProxy.Logging/bin/Release/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
